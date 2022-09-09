@@ -22,6 +22,7 @@ async function startWebServer(): Promise<AddressInfo> {
     true
   );
   const expressApp = express();
+  expressApp.use(requestIdExpressMiddleware);
   expressApp.use(helmet());
   expressApp.use(express.urlencoded({ extended: true }));
   expressApp.use(express.json());

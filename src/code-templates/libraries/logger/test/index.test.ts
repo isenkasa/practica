@@ -80,4 +80,18 @@ describe('logger', () => {
       stdCallCount: 1,
     });
   });
+
+  test('When passing object it should print it', async () => {
+    // Arrange
+    logger.configureLogger({ level: 'info', prettyPrint: false }, true);
+    // const stdoutStub = sinon.stub(process.stdout, 'write');
+
+    // Act
+    logger.info('This is an info message', { myObject: '4343' });
+
+    // Assert
+    // expect({ stdCallCount: stdoutStub.callCount }).toMatchObject({
+    //   stdCallCount: 1,
+    // });
+  });
 });

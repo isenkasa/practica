@@ -1,15 +1,16 @@
 import { Logger, LoggerConfiguration } from './definition';
 import PinoLogger from './pino.logger';
+import { context } from '@practica/async-local-storage';
 
 export class LoggerWrapper implements Logger {
-  private underlyingLogger: Logger | null = null;
+  #underlyingLogger: Logger | null = null;
 
   configureLogger(
     configuration: Partial<LoggerConfiguration>,
     overrideIfExists = true
   ): void {
-    if (this.underlyingLogger === null || overrideIfExists === true) {
-      this.underlyingLogger = new PinoLogger(
+    if (this.#underlyingLogger === null || overrideIfExists === true) {
+      this.#underlyingLogger = new PinoLogger(
         configuration.level || 'info',
         configuration.prettyPrint || false,
         undefined
@@ -18,28 +19,46 @@ export class LoggerWrapper implements Logger {
   }
 
   resetLogger() {
-    this.underlyingLogger = null;
+    this.#underlyingLogger = null;
   }
 
-  debug(message: string, ...args: unknown[]): void {
+  debug(message: string, metadata?: Record<any, unknown>): void {
     this.configureLogger({}, false);
-    this.underlyingLogger?.debug(message, ...args);
+    this.#underlyingLogger.debug(message, this.#mergeMetadata(metadata));
   }
 
-  error(message: string, ...args: unknown[]): void {
+  error(message: string, metadata?: Record<any, unknown>): void {
     this.configureLogger({}, false);
-    this.underlyingLogger?.error(message, ...args);
+    this.#underlyingLogger.error(message, this.#mergeMetadata(metadata));
   }
 
-  info(message: string, ...args: unknown[]): void {
+  info(message: string, metadata?: Record<any, unknown>): void {
     // If never initialized, the set default configuration
     this.configureLogger({}, false);
-    this.underlyingLogger?.info(message, ...args);
+    this.#underlyingLogger.info(message, this.#mergeMetadata(metadata));
   }
 
-  warning(message: string, ...args: unknown[]): void {
+  warning(message: string, metadata?: Record<any, unknown>): void {
     this.configureLogger({}, false);
-    this.underlyingLogger?.warning(message, ...args);
+    this.#underlyingLogger.warning(message, this.#mergeMetadata(metadata));
+  }
+
+  #mergeMetadata(
+    metadata?: Record<any, unknown>
+  ): Record<any, unknown> | undefined {
+    const currentContext = context().getStore();
+
+    // Doing this to avoid merging objects...
+    if (currentContext == null) {
+      return metadata;
+    }
+
+    if (metadata == null) {
+      return currentContext;
+    }
+
+    // Metadata would override the current context
+    return Object.assign({}, currentContext, metadata);
   }
 }
 

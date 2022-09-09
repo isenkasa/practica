@@ -2,7 +2,7 @@ import { pino, Logger as PinoLoggerImpl, DestinationStream } from 'pino';
 import { LOG_LEVELS, Logger } from './definition';
 
 export default class PinoLogger implements Logger {
-  private readonly logger: PinoLoggerImpl;
+  readonly #logger: PinoLoggerImpl;
 
   constructor(
     private level: LOG_LEVELS,
@@ -21,22 +21,22 @@ export default class PinoLogger implements Logger {
           }
         : undefined,
     };
-    this.logger = pino(opts);
+    this.#logger = pino(opts);
   }
 
-  debug(message: string, ...args: unknown[]): void {
-    this.logger.debug(message, ...args);
+  debug(message: string, metadata?: Record<any, unknown>): void {
+    this.#logger.debug(metadata, message);
   }
 
-  error(message: string, ...args: unknown[]): void {
-    this.logger.error(message, ...args);
+  error(message: string, metadata?: Record<any, unknown>): void {
+    this.#logger.error(metadata, message);
   }
 
-  info(message: string, ...args: unknown[]): void {
-    this.logger.info(message, ...args);
+  info(message: string, metadata?: Record<any, unknown>): void {
+    this.#logger.info(metadata, message);
   }
 
-  warning(message: string, ...args: unknown[]): void {
-    this.logger.warn(message, ...args);
+  warning(message: string, metadata?: Record<any, unknown>): void {
+    this.#logger.warn(metadata, message);
   }
 }

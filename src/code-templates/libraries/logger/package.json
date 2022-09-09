@@ -1,6 +1,6 @@
 {
   "name": "@practica/logger",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "",
   "main": "./.dist/index.js",
   "scripts": {
